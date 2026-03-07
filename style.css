@@ -1,0 +1,17 @@
+body {
+    background-color: hsla(210, 10%, 15%, 1);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
+}
+
+.calcBody {
+    background-color: hsla(210, 10%, 15%, 1);
+    box-shadow: 0.2rem 0.2rem 0.2rem 0.2rem hsla(210, 10%, 20%, 1);
+    min-width: 200px;
+    min-height: 200px;
+
+    display: flex;
+    flex-direction: column;
+}
