@@ -47,46 +47,59 @@ calcDisplay.appendChild(displayText);
 displayText.textContent = 0;
 
 // Handle key press of user and realtime display of inputs
-let input = '';
-let userOperator = '';
+let rawInput = ''; //raw key strokes from user input
+let userOperator = ''; //maths and other operation inputs
 function handleKeyPress(value) {
     if (value === 'ac') {
-        input = '';
+        rawInput = '';
         displayText.textContent = 0;
     } else if (value === 'del'){
-        if (input.length >= 2){
-            input = input.slice(0, -1);
-            displayText.textContent = input;
+        if (rawInput.length >= 2){
+            rawInput = rawInput.slice(0, -1);
+            displayText.textContent = rawInput;
             // console.log(input, input.length);
         } else {
-            input = '';
+            rawInput = '';
             displayText.textContent = 0;
             // console.log(input, input.length);
         }
     } else if (operators.includes(value)){
+        // this else if controls I/O of custom operations, excluding: a> DEL and b> AC
         if (value === '=') {
             console.log("answer")
         } else if (value === '.'){
             //if input number has '.' users cannot enter more '.'
-            if (!input.includes('.')){
+            if (!rawInput.includes('.')){
                 userOperator = value;
-                input += userOperator;
-                console.log(input, typeof(input), userOperator);
-                displayText.textContent = input;
+                rawInput += userOperator;
+                console.log(rawInput, typeof(rawInput), userOperator);
+                displayText.textContent = rawInput;
             } 
         } 
         else {
+            //check if input already has a math operator. Cases: YES, NO, EDGE
+            if (!operators.some(item => rawInput.includes(item))) {
+                //Case NO: there are no math oparator in the input
+                userOperator = value;
+                rawInput += userOperator;
+                console.log(rawInput, typeof(rawInput), userOperator);
+                displayText.textContent = rawInput;
+            } else if (operators.some(item => rawInput.includes(item) && rawInput.at(-1).includes(item))) {
+                //Case YES: input has math operator and it is the last item.
+                //Case EDGE: if user tries to add another math operator.
+                userOperator = value;
+                rawInput = rawInput.slice(0, -1);
+                rawInput += userOperator;
+                displayText.textContent = rawInput;
+                console.log(rawInput, typeof(rawInput), userOperator);
+            }
             // here I need to slice input into two numbers and store that in array to do math;
-            userOperator = value;
-            input = input.slice(0, -1);
-            input += userOperator;
-            console.log(input, typeof(input), userOperator);
-            displayText.textContent = input;
+
         }
     } else {
-        input += value;
-        console.log(input, typeof(input));
-        displayText.textContent = input;
+        rawInput += value;
+        console.log(rawInput, typeof(rawInput));
+        displayText.textContent = rawInput;
     }
 };
 
