@@ -45,6 +45,9 @@ let rawInput = ``; //raw key strokes from user input
         
         if (value === 'ac') {
             rawInput = '';
+            userOperator = '';
+            numA = 0;
+            numb = 0;
             displayText.textContent = '0';
         } else if (value === 'del') {
             if (rawInput.length <= 1) {
@@ -55,12 +58,22 @@ let rawInput = ``; //raw key strokes from user input
                 displayText.textContent = rawInput;
             }
         } else if (operators.includes(value)) {
-            rawInput += value;
-            userOperator = value;
-            numA = rawInput.slice(0, -1);
-            displayText.textContent = rawInput;
+            //need to only support single operation
+            if (userOperator.length === 0) {
+                rawInput += ' ' + value + ' ';
+                userOperator = value;
+                // numA = rawInput.slice(0, -1);
+                displayText.textContent = rawInput;
+            } else {
+                userOperator = value;
+            }
+            
         } else if (value === '.') {
-            if (!rawInput.includes('.')) {
+            let inputSegment = rawInput.split(' ');
+            if (!inputSegment.at(0).includes(value)) {
+                rawInput += value;
+                displayText.textContent = rawInput;
+            } else if (!inputSegment.at(2).includes(value)){
                 rawInput += value;
                 displayText.textContent = rawInput;
             }
@@ -70,24 +83,6 @@ let rawInput = ``; //raw key strokes from user input
             displayText.textContent = rawInput;
             console.log(rawInput);
         }
-        // if (operators.includes(value)){
-        //     userOperator = `${value}`;
-        //     rawInput = `${numA} ${userOperator} ${numb}`;
-        //     displayText.textContent = rawInput;
-        //     console.log(rawInput, value, typeof(value));
-        // } else if (value === 'ac') {
-        //     rawInput = `0`;
-        //     displayText.textContent = rawInput;
-        // } else if (value === 'del') {
-
-        // } else if (value === '.') {
-
-        // } else if (value === '=') {
-
-        // } else {
-        //     rawInput += value;
-        //     displayText.textContent = rawInput;
-        // }
     };
 
 // Handle Evaluation logic
