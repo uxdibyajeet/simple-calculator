@@ -14,6 +14,7 @@ function handleEval(a, b, op) {
         '-' : numA - numB,
         '*' : numA * numB,
         '/' : numA / numB,
+        '%' : (numA/100) * numB,
     }
     return String(evaluation[userOp]);
 }
@@ -90,8 +91,10 @@ let rawInput = ``; //raw key strokes from user input
                 displayText.textContent = rawInput;
             }
         } else if (value === '=') {
+            if ()
             let segemnts = rawInput.split(' ');
             rawInput = handleEval(segemnts.at(0), segemnts.at(2), segemnts.at(1));
+            displayText.textContent = rawInput;
         } else {
             rawInput += value;
             displayText.textContent = rawInput;
