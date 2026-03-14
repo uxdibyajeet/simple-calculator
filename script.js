@@ -3,6 +3,21 @@
 // Code for keyboard UI
 const calcKeyboard = document.querySelector('.calcKeyboard');
 
+
+// Handle Evaluation logic
+function handleEval(a, b, op) {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    const userOp = op.split(' ').join('');
+    const evaluation = {
+        '+' : numA + numB,
+        '-' : numA - numB,
+        '*' : numA * numB,
+        '/' : numA / numB,
+    }
+    return String(evaluation[userOp]);
+}
+
 // populating the keyboard
 const allButtons = ['ac','del', '%', '/',
                     7, 8, 9, '*', 
@@ -35,9 +50,6 @@ calcDisplay.appendChild(displayText);
 displayText.textContent = 0;
 
 // Handle key press of user and realtime display of inputs
-let numA = 0;
-let numb = 0;
-let userOperator = ''; //maths and other operation inputs
 let rawInput = ``; //raw key strokes from user input
     
     //handle I/O logic
@@ -54,35 +66,35 @@ let rawInput = ``; //raw key strokes from user input
                 rawInput = '';
                 displayText.textContent = '0';
             } else {
-                rawInput = rawInput.slice(0, -1);
+                const forDel = rawInput.split(' ').join('');
+                rawInput = forDel.slice(0, -1);
                 displayText.textContent = rawInput;
             }
         } else if (operators.includes(value)) {
             //need to only support single operation
-            if (userOperator.length === 0) {
+            if (!operators.some(op => rawInput.includes(op))) {
                 rawInput += ' ' + value + ' ';
-                userOperator = value;
-                // numA = rawInput.slice(0, -1);
                 displayText.textContent = rawInput;
-            } else {
-                userOperator = value;
+                console.log(rawInput)
+            } else if (operators.some(op => rawInput.includes(op))) {
+                rawInput = rawInput.slice(0, -3); // removes last three characters
+                rawInput += ' ' + value + ' ';
+                displayText.textContent = rawInput;
             }
-            
         } else if (value === '.') {
-            let inputSegment = rawInput.split(' ');
-            if (!inputSegment.at(0).includes(value)) {
-                rawInput += value;
-                displayText.textContent = rawInput;
-            } else if (!inputSegment.at(2).includes(value)){
-                rawInput += value;
+            let inputSegment = rawInput.split(' '); // splits rawInput into 3 segemnts in array format
+            let currNum = inputSegment[inputSegment.length -1]; // current working number
+            if (!currNum.includes(value)) {
+                const addDecimal = (currNum === '') ? '0.' : '.';
+                rawInput += addDecimal;
                 displayText.textContent = rawInput;
             }
-        } 
-        else {
+        } else if (value === '=') {
+            let segemnts = rawInput.split(' ');
+            rawInput = handleEval(segemnts.at(0), segemnts.at(2), segemnts.at(1));
+        } else {
             rawInput += value;
             displayText.textContent = rawInput;
             console.log(rawInput);
         }
     };
-
-// Handle Evaluation logic
