@@ -20,7 +20,7 @@ let rawInput = {
 function handleEval(a, b, op) {
     const numA = parseFloat(a);
     const numB = parseFloat(b);
-    const userOp = op.split(' ').join('');
+    const userOp = op;
     const evaluation = {
         '+' : numA + numB,
         '-' : numA - numB,
@@ -28,7 +28,13 @@ function handleEval(a, b, op) {
         '/' : numA / numB,
         '%' : (numA/100) * numB,
     }
-    return String(evaluation[userOp]);
+
+    const value = (evaluation[userOp]).toFixed(2);
+    let result = (Number.isInteger(evaluation[userOp])) ? parseInt(value) : value;
+    return String(result);
+    //To-Dos
+    // basic calculations (done)
+    // handle rounding of floats to 2 digit(done)
 }
 
 // populating the keyboard
@@ -92,11 +98,19 @@ function updateDisplay(value) {
         const valueToStr = value.toString();
         const operators = ['+', '-', '/', '*', '%',];
         if(operators.some(item => valueToStr.includes(item))) {
-            rawInput.operator = valueToStr; // currently replacing operators
-            updateDisplay(valueToStr);
-            //to-do: 
-            // 1.if operator is there and no curr number then replace operator
-            // 2. if operator is there and curr number is also there then perform handleEval and set new operator
+            if (rawInput.operator === '' || rawInput.currNum === '') {
+                // replacing operator if rawInput.operator && rawInput.currNum are empty
+                rawInput.operator = valueToStr; 
+                updateDisplay(valueToStr);
+            } else {
+                // solved: Enter another operator or equals sign to generate result
+                let result = handleEval(rawInput.prevNum, rawInput.currNum, rawInput.operator);
+                rawInput.prevNum = result;
+                rawInput.operator = valueToStr;
+                rawInput.currNum = '';
+                console.log(result);
+                updateDisplay(valueToStr); 
+            }
         } else {
             return null;
         }
@@ -148,12 +162,23 @@ function updateDisplay(value) {
     function handleEquals(value) {
         const valueToStr = value.toString();
         if (valueToStr === '=') {
+            //To-Do:
+            // handle divide by zero
+            //case 1: prevNum is empty
+            //case 2: currNum is empty
+            //case 3: When a result is displayed, 
+            // ..pressing a new digit should clear 
+            // ..the result and start a new calculation 
+            // ..instead of appending the digit to the 
+            // ..existing result
             let result = handleEval(rawInput.prevNum, rawInput.currNum, rawInput.operator);
             rawInput.prevNum = result;
             rawInput.operator = '';
             rawInput.currNum = '';
             console.log(result);
             updateDisplay(valueToStr); 
+        } else {
+            return null;
         }
     }
 
