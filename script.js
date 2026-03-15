@@ -21,6 +21,10 @@ function handleEval(a, b, op) {
     const numA = parseFloat(a);
     const numB = parseFloat(b);
     const userOp = op;
+    //handle divide by zero
+    if (userOp === '/' && numB === 0) {
+        return 'cannot divide by zero :3';
+    } 
     const evaluation = {
         '+' : numA + numB,
         '-' : numA - numB,
@@ -28,9 +32,9 @@ function handleEval(a, b, op) {
         '/' : numA / numB,
         '%' : (numA/100) * numB,
     }
-
-    const value = (evaluation[userOp]).toFixed(2);
-    let result = (Number.isInteger(evaluation[userOp])) ? parseInt(value) : value;
+    const raw = evaluation[userOp];
+    const value = raw.toFixed(2);
+    let result = (Number.isInteger(raw)) ? parseInt(value) : value;
     return String(result);
     //To-Dos
     // basic calculations (done)
@@ -67,16 +71,10 @@ function fetchUserInput() {
     });
 };
 
-function updateDisplay(value) {
-    //default
+function updateDisplay() {
     let defaultDisplay = 0;
-    let display = `${rawInput.prevNum} ${rawInput.operator} ${rawInput.currNum}`;
-    if (display === '  ') {
-        displayText.textContent = defaultDisplay;
-    } else {
-        displayText.textContent = (value !== undefined && value !== null) ? display : defaultDisplay;
-    }
-    // console.log(display, display.length);
+    const display = `${rawInput.prevNum} ${rawInput.operator} ${rawInput.currNum}`;
+        displayText.textContent = display.trim() === ''? defaultDisplay : display;
 }
 
 // Handle key press of user
@@ -88,7 +86,7 @@ function updateDisplay(value) {
         if(numInputs.some(item => valueToStr.includes(item))){
             // if rawInput.operator doesnt hve value store inputs to prevNum else CurNum (done)
             rawInput[rawInput.operator === '' ? 'prevNum' : 'currNum'] += valueToStr;
-            updateDisplay(valueToStr);
+            updateDisplay();
         } else {
             return null;
         }
@@ -101,15 +99,14 @@ function updateDisplay(value) {
             if (rawInput.operator === '' || rawInput.currNum === '') {
                 // replacing operator if rawInput.operator && rawInput.currNum are empty
                 rawInput.operator = valueToStr; 
-                updateDisplay(valueToStr);
+                updateDisplay();
             } else {
                 // solved: Enter another operator or equals sign to generate result
                 let result = handleEval(rawInput.prevNum, rawInput.currNum, rawInput.operator);
                 rawInput.prevNum = result;
                 rawInput.operator = valueToStr;
                 rawInput.currNum = '';
-                console.log(result);
-                updateDisplay(valueToStr); 
+                updateDisplay(); 
             }
         } else {
             return null;
@@ -125,7 +122,7 @@ function updateDisplay(value) {
             // check if current already has decimal (to-do)
             if (!rawInput[activeField].includes('.')) {
                 rawInput[activeField] += addDecimal;
-                updateDisplay(valueToStr);
+                updateDisplay();
             }
         } else {
             return null
@@ -139,7 +136,7 @@ function updateDisplay(value) {
             rawInput.operator = '';
             rawInput.prevNum = '';
             rawInput.currNum = '';
-            updateDisplay(valueToStr);
+            updateDisplay();
         } else {
             return null;
         }
@@ -152,7 +149,7 @@ function updateDisplay(value) {
             let activeField = rawInput.operator === '' ? 'prevNum' : (rawInput.currNum === '' ? 'operator' : 'currNum');  // check working field
             let removed = rawInput[activeField].slice(0, -1);
             rawInput[activeField] = removed;
-            updateDisplay(valueToStr);
+            updateDisplay();
         } else {
             return null;
         }
@@ -161,24 +158,16 @@ function updateDisplay(value) {
     //handle '='
     function handleEquals(value) {
         const valueToStr = value.toString();
+        
         if (valueToStr === '=') {
-            //To-Do:
-            // handle divide by zero
-            //case 1: prevNum is empty
-            //case 2: currNum is empty
-            //case 3: When a result is displayed, 
-            // ..pressing a new digit should clear 
-            // ..the result and start a new calculation 
-            // ..instead of appending the digit to the 
-            // ..existing result
-            let result = handleEval(rawInput.prevNum, rawInput.currNum, rawInput.operator);
-            rawInput.prevNum = result;
-            rawInput.operator = '';
-            rawInput.currNum = '';
-            console.log(result);
-            updateDisplay(valueToStr); 
-        } else {
-            return null;
+            if (rawInput.prevNum === '' || rawInput.currNum === '' || rawInput.operator === '') {
+                return;
+            }
+        let result = handleEval(rawInput.prevNum, rawInput.currNum, rawInput.operator);
+        displayText.textContent = result;
+        rawInput.prevNum = '';
+        rawInput.currNum = '';
+        rawInput.operator = '';
         }
     }
 
